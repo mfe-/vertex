@@ -14,26 +14,20 @@ export class VertexView extends ScatterView {
         console.log("VertexView._paint() called")
         console.log(`Number of indices: ${indices.length}`)
         super._paint(ctx, indices, data)
-        // Draw a polyline connecting all vertices
+        // Always draw a polyline connecting all vertices, not just selected ones
         const {sx, sy} = {...this, ...data}
-        ctx.save()
-        ctx.beginPath()
-        let started = false;
-        for (const i of indices) {
-            const sx_i = sx[i]
-            const sy_i = sy[i]
-            //if (!isFinite(sx_i + sy_i)) continue
-            if (!started) {
-                ctx.moveTo(sx_i, sy_i)
-                started = true
-            } else {
-                ctx.lineTo(sx_i, sy_i)
+        if (sx && sy && sx.length > 1 && sy.length > 1) {
+            ctx.save()
+            ctx.beginPath()
+            ctx.moveTo(sx[0], sy[0])
+            for (let i = 1; i < sx.length; i++) {
+                ctx.lineTo(sx[i], sy[i])
             }
+            ctx.strokeStyle = "black"; // Customize as needed
+            ctx.lineWidth = 2;
+            ctx.stroke()
+            ctx.restore()
         }
-        ctx.strokeStyle = "black"; // Customize as needed
-        ctx.lineWidth = 2;
-        ctx.stroke()
-        ctx.restore()
     }
   render(): void {
     super.render()
