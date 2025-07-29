@@ -46,11 +46,6 @@ def tap_callback(event):
         new_y = points_source.data['y'] + [event.y]
         points_source.data = dict(x=new_x, y=new_y)
 
-def clear_points():
-    points_source.data = dict(x=[], y=[])
-
-
-
 # Add PointDrawTool to allow dragging points
 point_draw_tool = PointDrawTool(renderers=[p_points], add=False, drag=True)
 p.add_tools(point_draw_tool)
