@@ -11,17 +11,15 @@ from bokeh.models import CustomJS, PanTool
 
 from vertex import Vertex
 
-# Data sources for user points and the spline
-np.random.seed()  # Optional: for true randomness
+# start with bokeh serve .\sample_spline.py
+np.random.seed() 
 x_rand = np.random.randint(512, 727, 5)
 y_rand = np.random.randint(512, 727, 5)
 points_source = ColumnDataSource(data=dict(x=list(x_rand), y=list(y_rand)))
 
 # Create the plot with wheel zoom and pan tool enabled
-p = figure(title="Click to add points. Spline will update.",
+p = figure(title="bokeh serve .\sample_spline.py",
     tools="pan,wheel_zoom,box_zoom,tap,reset",
-    #sizing_mode="stretch_both",
-    #match_aspect=True,
     width=1024, height=1024
 )
 p.xgrid.visible = True
