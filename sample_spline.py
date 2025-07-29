@@ -15,7 +15,8 @@ from vertex import Vertex
 np.random.seed() 
 x_rand = np.random.randint(512, 727, 5)
 y_rand = np.random.randint(512, 727, 5)
-points_source = ColumnDataSource(data=dict(x=list(x_rand), y=list(y_rand)))
+colors = ["red" if i % 2 == 0 else "violet" for i in range(5)]
+points_source = ColumnDataSource(data=dict(x=list(x_rand), y=list(y_rand), color=colors))
 
 # Create the plot with wheel zoom and pan tool enabled
 p = figure(title="bokeh serve .\sample_spline.py",
@@ -35,6 +36,7 @@ p.y_range.end = 1024
 p.toolbar.active_scroll = p.select_one(WheelZoomTool)
 
 p_points = p.add_glyph(points_source, Vertex())
+# p.scatter('x', 'y', source=points_source, color='color', size=12)
 
 p_points.selection_glyph = p_points.glyph.clone()
 p_points.selection_glyph.size = 16
