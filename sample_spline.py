@@ -97,6 +97,7 @@ js_code = '''
             // Insert midpoint on 'p' if exactly two points are selected
             if ((e.key === 'p' || e.key === 'P') && pointsSource && pointsSource.selected.indices.length === 2) {
                 const inds = pointsSource.selected.indices.slice();
+                console.log("access here correspoding VertexView of the selected VertexView:", inds);
                 const x = pointsSource.data.x.slice();
                 const y = pointsSource.data.y.slice();
                 const color = pointsSource.data.color ? pointsSource.data.color.slice() : null;
