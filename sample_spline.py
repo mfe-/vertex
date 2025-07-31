@@ -76,6 +76,52 @@ def change_line_width():
     data['trace_width'][2] = 10
     points_source.data = data
 
+points_source_id = points_source.id
+js_code = '''
+    // Store state on window to avoid multiple listeners
+    if (!window._bokeh_pan_key_listener_added) {
+        window._bokeh_pan_key_listener_added = true;
+        const pointsSource = Bokeh.documents[0].get_model_by_id("%s");
+
+        window.addEventListener('keydown', function(e) {
+            // Delete selected point(s) on DEL
+            if ((e.key === 'Delete' || e.key === 'Del') && pointsSource && pointsSource.selected.indices.length > 0) {
+                const inds = pointsSource.selected.indices;
+                const x = pointsSource.data.x.slice();
+                const y = pointsSource.data.y.slice();
+                // Remove all selected indices (from last to first)
+                inds.sort((a,b)=>b-a).forEach(i => { x.splice(i,1); y.splice(i,1); });
+                pointsSource.data = {x: x, y: y};
+                pointsSource.selected.indices = [];
+            }
+            // Insert midpoint on 'p' if exactly two points are selected
+            if ((e.key === 'p' || e.key === 'P') && pointsSource && pointsSource.selected.indices.length === 2) {
+                const inds = pointsSource.selected.indices.slice();
+                const x = pointsSource.data.x.slice();
+                const y = pointsSource.data.y.slice();
+                const color = pointsSource.data.color ? pointsSource.data.color.slice() : null;
+                const trace_width = pointsSource.data.trace_width ? pointsSource.data.trace_width.slice() : null;
+                const i0 = inds[0], i1 = inds[1];
+                const mx = (x[i0] + x[i1]) / 2;
+                const my = (y[i0] + y[i1]) / 2;
+                // Use color and trace_width from the first selected point (i0)
+                const new_color = color ? color[i0] : undefined;
+                const new_trace_width = trace_width ? trace_width[i0] : undefined;
+                // Insert new point between the two selected indices (at higher index + 1)
+                const insertAt = Math.max(i0, i1);
+                x.splice(insertAt, 0, mx);
+                y.splice(insertAt, 0, my);
+                if (color) color.splice(insertAt, 0, new_color);
+                if (trace_width) trace_width.splice(insertAt, 0, new_trace_width);
+                pointsSource.data = {x: x, y: y, color: color, trace_width: trace_width};
+                // Select only the new point
+                pointsSource.selected.indices = [insertAt];
+            }
+        });
+    }
+    ''' % (points_source_id)
+curdoc().js_on_event('document_ready', CustomJS(code=js_code))
+
 button = Button(label="change line_width")
 button.on_click(change_line_width)
 curdoc().add_root(column(p, button))
