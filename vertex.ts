@@ -3,7 +3,7 @@ import * as p from "core/properties"
 import type { Context2d } from "core/util/canvas"
 // import {catmullrom_spline} from "core/util/interpolation"
 import type * as visuals from "core/visuals"
-// import * as color from "core/util/color"
+// import * as colorutil from "core/util/color"
 import type {Arrayable} from "core/types"
 import {infer_type} from "core/types"
 import {assert} from "core/util/assert"
@@ -45,7 +45,8 @@ export class VertexView extends ScatterView {
         ctx.beginPath();
         const idx = indices[i];
         ctx.lineWidth = line_widths[idx];
-        console.log(`Segment ${i}: vertex index ${idx}, lineWidth ${line_widths[idx]}`);
+        this.visuals.line.apply(ctx, idx)
+        // console.log(`Segment ${i}: vertex index ${idx}, lineWidth ${line_widths[idx]}, color rgba(${r},${g},${b},1)`);
         ctx.moveTo(xt[i - 1], yt[i - 1]);
         ctx.lineTo(xt[i], yt[i]);
         ctx.stroke();

@@ -8,15 +8,16 @@ from bokeh.models import ColumnDataSource, Button, PointDrawTool, WheelZoomTool,
 from bokeh.plotting import figure
 from bokeh.layouts import column, row
 from bokeh.models import CustomJS, PanTool
-
+from bokeh.models import Button
 from vertex import Vertex
 
 # start with bokeh serve .\sample_spline.py
 np.random.seed() 
 x_rand = np.random.randint(512, 727, 5)
 y_rand = np.random.randint(512, 727, 5)
-colors = ["red" if i % 3 == 0 else ("black" if i % 3 == 1 else "green") for i in range(5)]
-trace_widths = [2, 2, 5, 5, 2]
+colors = ["red" ,"black", "green", "red","red"]
+#               0, 1, 2, 3, 4 
+trace_widths = [5, 2, 5, 2, 2]
 points_source = ColumnDataSource(data=dict(x=list(x_rand), y=list(y_rand), color=colors, trace_width=trace_widths))
 
 # Create the plot with wheel zoom and pan tool enabled
@@ -37,7 +38,7 @@ p.y_range.end = 1024
 p.toolbar.active_scroll = p.select_one(WheelZoomTool)
 
 # Use the color column for line_color in the Vertex glyph
-p_points = p.add_glyph(points_source, Vertex(line_color='color'))
+p_points = p.add_glyph(points_source, Vertex(line_color='color', line_width='trace_width'))
 # p.scatter('x', 'y', source=points_source, color='color', size=12)
 
 p_points.selection_glyph = p_points.glyph.clone()
@@ -70,6 +71,12 @@ def on_point_selected(attr, old, new):
 
 points_source.selected.on_change('indices', on_point_selected)
 
+def change_line_width():
+    data = points_source.data.copy()
+    data['trace_width'][2] = 10
+    points_source.data = data
 
-curdoc().add_root(column(p))
+button = Button(label="change line_width")
+button.on_click(change_line_width)
+curdoc().add_root(column(p, button))
 curdoc().title = "Interactive Spline Trace"
