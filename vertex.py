@@ -14,5 +14,5 @@ class Vertex(Scatter):
         kwargs.setdefault('size', 8)
         kwargs.setdefault('fill_color', color)
         kwargs.setdefault('fill_alpha', 0.8)
-        kwargs.setdefault('line_color', None)
+        kwargs.setdefault('line_color', "red")
         super().__init__(**kwargs)

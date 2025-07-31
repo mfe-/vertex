@@ -2,6 +2,7 @@ import {Scatter, ScatterView} from "models/glyphs/scatter"
 import * as p from "core/properties"
 import type {Context2d} from "core/util/canvas"
 import {catmullrom_spline} from "core/util/interpolation"
+import type * as visuals from "core/visuals"
 
 export class VertexView extends ScatterView {
   declare model: Vertex
@@ -27,10 +28,15 @@ export class VertexView extends ScatterView {
             ctx.moveTo(xt[0], yt[0])
             for (let i = 1; i < xt.length; i++) {
                 ctx.lineTo(xt[i], yt[i])
+                // use special "Visual" classes for configuring the HTML context that will do the right thing, 
+                // regardless of whether there is a single scalar value, or a vector of values
+                // It provides accessors for vectorized visual properties (like line, fill, hatch) that correspond to glyph property definitions in your Python model (e.g., line_color, line_width, etc.).
+                this.visuals.line.apply(ctx, i)
             }
-            ctx.strokeStyle = "black";
-            ctx.lineWidth = 2;
+            // renders the entire path
             ctx.stroke()
+            // Restore the context to its previous state 
+            // otherwise, the next drawing operation would be affected by the current state
             ctx.restore()
         }
     }
@@ -41,7 +47,7 @@ export class VertexView extends ScatterView {
 
 export namespace Vertex {
   export type Attrs = p.AttrsOf<Props>
-
+  export type Visuals = Scatter.Visuals & {line: visuals.LineVector, fill: visuals.FillVector, hatch: visuals.HatchVector}
   export type Props = Scatter.Props & {
     // Add custom properties here if needed
   }
